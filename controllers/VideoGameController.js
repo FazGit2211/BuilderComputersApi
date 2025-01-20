@@ -1,51 +1,62 @@
-import VideoGame from "../models/VideoGame.js";
+import VideoGame from "../models/videoGame.js";
 
 //Crear un videojuego nuevo
-export const createVideoGame = async (req, res) => {
+const createVideoGame = async (req, res) => {
     try {
         const { name, genred, year } = req.body;
         const newVideoGame = await VideoGame.create({ name, genred, year });
         res.status(201).json(newVideoGame);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Error POST VideoGame', error });
+        res.status(500).json({ message: 'Error POST VideoGame' });
     }
 };
 
 //Obtener a todos los videojuegos
-export const getAllVideoGames = async (req, res) => {
+const getAllVideoGames = async (req, res) => {
     try {
         const videoGames = await VideoGame.find();
         res.status(200).json(videoGames);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Error al GET ALL VideoGame', error });
+        res.status(500).json({ message: 'Error al GET ALL VideoGame' });
     }
 };
 
 //Obtener un solo videojuego por nombre 
-export const findByName = async (req, res) => {
+const findByName = async (req, res) => {
     try {
         //console.log(req.params.name);
         const videoGame = await VideoGame.findOne({ name: req.params.name });
-        res.status(200).json(videoGame);
+        if (videoGame == null) {
+            res.status(200).json({ message: 'Null Object' });
+        } else {
+            res.status(200).json(videoGame);
+        }
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Error al GET VideoGame', error });
+        res.status(500).json({ message: 'Error al GET VideoGame' });
     }
 }
 
-//Actualizar por nombre del videojuego por nombre
-export const putByName = async (req, res) => {
+//Actualizar por nombre del videojuego
+const putById = async (req, res) => {
     try {
-        const videoGame = await VideoGame.findOne({ name: req.params.name });
-        if (videoGame) {
-            videoGame.updateOne(req.body).then(() => { console.log("Success") });
-            res.status(200);
+        const videoGameUpdate = await VideoGame.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (videoGameUpdate == null) {
+            res.status(200).json({ message: 'Null Object' });
+        } else {
+            res.status(200).json(videoGameUpdate);
         }
-        res.status(400);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Error al PUT VideoGame', error });
+        res.status(500).json({ message: 'Error al PUT VideoGame' });
     }
+}
+
+export default {
+    createVideoGame,
+    getAllVideoGames,
+    findByName,
+    putById
 }
